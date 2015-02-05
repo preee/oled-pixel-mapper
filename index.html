@@ -1,0 +1,106 @@
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:fb="http://ogp.me/ns/fb#" lang="tr" >
+<head>
+<title>Pixel Generator</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+<style type="text/css">
+	td.pixel {width:20px;height:20px;}
+	tr {height:20px;}
+	tr,td {
+		border: solid 1px #000;
+	}
+
+	#grid {margin-top:10px;}
+	#output {margin-top:10px;}
+	.black {background: #000;}
+</style>
+<script>
+$(function() {
+	var width = 1;
+	var height= 1;
+
+	$( "input[name='prepare']" ).click(function() {
+		$( "input[name='export']" ).attr("disabled", false);
+		width = $("input[name='width']" ).val();
+		height = $("input[name='height']" ).val();
+
+		$("#grid").html('<table>');
+
+		var temp;
+		for(y=0;y<height;y++){
+			temp = "<tr>";
+			for(x=0;x<width;x++){
+				temp = temp + "<td class='pixel' id='pixel_"+x+"x"+y+"'></td>";
+			}
+
+			temp = temp + "</tr>";
+
+			$('#grid').append(  temp );
+			event.preventDefault();
+		}
+
+		$('#grid').append( '</table>' );
+
+	});
+
+	$( "input[name='export']" ).click(function() {
+		var temp;
+
+		$("#output").html('');
+		
+		for(y=0;y<height;y++){
+			temp = '';
+			for(x=0;x<width;x++){
+				if( $("#pixel_"+x+"x"+y).hasClass('black') ){
+					temp = temp + "1";
+				} else {
+					temp = temp + "0";
+				}
+
+				if( x%8==7 ){
+					
+					$("#output").append(bin2hex(temp) + ", ");
+					temp = '';
+				}
+			}
+
+			
+		}
+
+		
+	});
+
+	$( "body" ).on( "click", ".pixel", function() {
+		if( $( "#" + this.id ).hasClass('black') ){
+			$( "#" + this.id ).removeClass( 'black' );
+		} else {
+			$( "#" + this.id ).addClass( 'black' );
+		}
+	});
+
+	function bin2hex(s) {
+		var convertBase = function (num) {
+	        this.from = function (baseFrom) {
+	            this.to = function (baseTo) {
+	                return parseInt(num, baseFrom).toString(baseTo);
+	            };
+	            return this;
+	        };
+	        return this;
+	    };
+
+	    return "0x" + convertBase(s).from(2).to(16);
+	}
+
+});
+
+</script>
+</head>
+
+<body>
+	Resolution: <input type="text" name="width" value="16"> X <input type="text" name="height" value="16"><input name="prepare" type="button" value="Prepare Grid"><input name="export" type="button" value="Export Data" disabled>
+	<div id="grid"></div>
+	<div id="output"></div>
+</body>
