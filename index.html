@@ -6,6 +6,7 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <style type="text/css">
+	* {font-family:'verdana';}
 	td.pixel {width:9px;height:10px;}
 	tr {height:10px;}
 	tr,td {
@@ -17,41 +18,18 @@
 	.pix {background: rgba(255,170,0,0.1);}
 	#grid {margin-top:10px;}
 	#output { padding:10px; display:none; margin-top:20px;width: 80%; height: 100px; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
+
+	#input { padding:10px; display:none; margin-top:20px;width: 80%; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
 	.black {background: #000;}
 	table {border: 1px solid #000;}
 </style>
 <script>
 $(function() {
 	var width = 1;
-	var height= 1;
+	var height= 1;	
 
 	$( "input[name='prepare']" ).click(function() {
-		$('#grid table').empty("tr");
-
-		$( "input[name='export']" ).attr("disabled", false);
-		width = $("#width" ).val();
-		height = $("#height" ).val();
-
-	
-
-		var temp;
-		for(y=0;y<height;y++){
-			temp = "<tr>";
-			for(x=0;x<width;x++){
-				if (x % 8 ==0 ) {
-					temp = temp + "<td class='pixel pix' id='pixel_"+x+"x"+y+"'></td>";				
-				}else {
-					temp = temp + "<td class='pixel' id='pixel_"+x+"x"+y+"'></td>";
-				}
-			}
-
-			temp = temp + "</tr>";
-
-			$('#grid table').append(  temp );
-			event.preventDefault();
-		}
-
-
+		prepareGrid();
 	});
 
 	$( "input[name='export']" ).click(function() {
@@ -79,8 +57,51 @@ $(function() {
 
 			
 		}
+	});
 
-		
+	$( "input[name='import']" ).click(function() {
+		$("#input").toggle();
+		$("#output").html('').hide();
+	});
+
+	$( "input[name='import2']" ).click(function() {
+		width = $("#width" ).val();
+		height = $("#height" ).val();
+
+		var cols = width/8;
+		var array = $('#input textarea').val().split(",");
+
+		prepareGrid();
+
+		var cursor_x=0;
+		var cursor_y=0;
+
+		$.each(array,function(i){
+			if( array[i] ){
+				var hex = array[i].trim();
+				var pad = "00000000";
+				hex = hex.substring(2,4);
+
+				var bin = hex2bin( hex );
+
+				bin = pad.substring(0, pad.length - bin.length) + bin;
+
+				//loop in a 8-bit
+				for(n=0;n<8;n++){
+					if( bin[n]==1 ){
+						$( "#pixel_" + cursor_x + "x" + cursor_y ).addClass( 'black' );
+					}
+
+					cursor_x++;
+				}
+
+				if( (i+1)%cols == 0){
+					cursor_x=0;
+					cursor_y++;
+				}
+			}
+		});
+
 	});
 
 	$( "body" ).on( "click", ".pixel", function() {
@@ -105,6 +126,47 @@ $(function() {
 	    return "0x" + convertBase(s).from(2).to(16);
 	}
 
+	function hex2bin(s) {
+		var convertBase = function (num) {
+	        this.from = function (baseFrom) {
+	            this.to = function (baseTo) {
+	                return parseInt(num, baseFrom).toString(baseTo);
+	            };
+	            return this;
+	        };
+	        return this;
+	    };
+
+	    return convertBase(s).from(16).to(2);
+	}
+
+	function prepareGrid(){
+		$('#grid').html('<table cellpadding="0" cellspacing="0">');
+
+		$( "input[name='export']" ).attr("disabled", false);
+		width = $("#width" ).val();
+		height = $("#height" ).val();
+
+
+		var temp;
+		for(y=0;y<height;y++){
+			temp = "<tr>";
+			for(x=0;x<width;x++){
+				if (x % 8 ==0 ) {
+					temp = temp + "<td class='pixel pix' id='pixel_"+x+"x"+y+"'></td>";				
+				}else {
+					temp = temp + "<td class='pixel' id='pixel_"+x+"x"+y+"'></td>";
+				}
+			}
+
+			temp = temp + "</tr>";
+
+			$('#grid table').append( temp );
+			event.preventDefault();
+		}
+
+		$('#grid').append('</table>');
+	};
 });
 
 </script>
@@ -152,6 +214,14 @@ $(function() {
 	</select>
 	<input name="prepare" type="button" value="Prepare Grid">
 	<input name="export" type="button" value="Export Data" disabled>
-	<div id="grid"><table cellpadding="0" cellspacing="0"></table></div>
+	<input name="import" type="button" value="Import Data">
+	<div id="grid"></div>
 	<div id="output"></div>
+	<div id="input" style="display:none;">
+		<h2>Import uint8_t data</h2>
+		<div>Sample Data: 0x14, 0x0, 0x1c</div>
+		<textarea name="input" cols="50" rows="8"></textarea>
+		<br />
+		<input name="import2" type="button" value="Import">
+	</div>
 </body>
