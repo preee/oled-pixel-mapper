@@ -6,15 +6,19 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <style type="text/css">
-	td.pixel {width:20px;height:20px;}
-	tr {height:20px;}
+	td.pixel {width:9px;height:10px;}
+	tr {height:10px;}
 	tr,td {
-		border: solid 1px #000;
+		border: solid 1px rgba(0,0,0,0.1);
+		border-right: 0;
+		border-bottom: 0;
+		background: rgba(0,163,217,0.05);
 	}
-
+	.pix {background: rgba(255,170,0,0.1);}
 	#grid {margin-top:10px;}
-	#output {margin-top:10px;}
+	#output { padding:10px; display:none; margin-top:20px;width: 80%; height: 100px; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
 	.black {background: #000;}
+	table {border: 1px solid #000;}
 </style>
 <script>
 $(function() {
@@ -22,30 +26,37 @@ $(function() {
 	var height= 1;
 
 	$( "input[name='prepare']" ).click(function() {
-		$( "input[name='export']" ).attr("disabled", false);
-		width = $("input[name='width']" ).val();
-		height = $("input[name='height']" ).val();
+		$('#grid table').empty("tr");
 
-		$("#grid").html('<table>');
+		$( "input[name='export']" ).attr("disabled", false);
+		width = $("#width" ).val();
+		height = $("#height" ).val();
+
+	
 
 		var temp;
 		for(y=0;y<height;y++){
 			temp = "<tr>";
 			for(x=0;x<width;x++){
-				temp = temp + "<td class='pixel' id='pixel_"+x+"x"+y+"'></td>";
+				if (x % 8 ==0 ) {
+					temp = temp + "<td class='pixel pix' id='pixel_"+x+"x"+y+"'></td>";				
+				}else {
+					temp = temp + "<td class='pixel' id='pixel_"+x+"x"+y+"'></td>";
+				}
 			}
 
 			temp = temp + "</tr>";
 
-			$('#grid').append(  temp );
+			$('#grid table').append(  temp );
 			event.preventDefault();
 		}
 
-		$('#grid').append( '</table>' );
 
 	});
 
 	$( "input[name='export']" ).click(function() {
+
+		$("#output").fadeIn();
 		var temp;
 
 		$("#output").html('');
@@ -100,7 +111,47 @@ $(function() {
 </head>
 
 <body>
-	Resolution: <input type="text" name="width" value="16"> X <input type="text" name="height" value="16"><input name="prepare" type="button" value="Prepare Grid"><input name="export" type="button" value="Export Data" disabled>
-	<div id="grid"></div>
+	Resolution: 
+	<select name="width" id="width">
+		<option value="8">8</option>
+		<option value="16">16</option>
+		<option value="24">24</option>
+		<option value="32">32</option>
+		<option value="40">40</option>
+		<option value="48">48</option>
+		<option value="56">56</option>
+		<option value="64">64</option>
+		<option value="72">72</option>
+		<option value="80">80</option>
+		<option value="88">88</option>
+		<option value="96">96</option>
+		<option value="104">104</option>
+		<option value="112">112</option>
+		<option value="120">120</option>
+		<option value="128">128</option>
+
+	</select>
+	X
+	<select name="height" id="height">
+		<option value="8">8</option>
+		<option value="16">16</option>
+		<option value="24">24</option>
+		<option value="32">32</option>
+		<option value="40">40</option>
+		<option value="48">48</option>
+		<option value="56">56</option>
+		<option value="64">64</option>
+		<option value="72">72</option>
+		<option value="80">80</option>
+		<option value="88">88</option>
+		<option value="96">96</option>
+		<option value="104">104</option>
+		<option value="112">112</option>
+		<option value="120">120</option>
+		<option value="128">128</option>
+	</select>
+	<input name="prepare" type="button" value="Prepare Grid">
+	<input name="export" type="button" value="Export Data" disabled>
+	<div id="grid"><table cellpadding="0" cellspacing="0"></table></div>
 	<div id="output"></div>
 </body>
