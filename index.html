@@ -20,7 +20,7 @@
 	}
 	.pix {background: rgba(255,170,0,0.1);}
 	#grid {margin-top:10px;}
-	#output { padding:10px; display:none; margin-top:20px;width: 80%; height: 100px; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
+	#output { padding:10px; display:none; margin-top:20px;width: 80%; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
 
 	#input { padding:10px; display:none; margin-top:20px;width: 80%; resize:none; border: 1px solid #00A3D9; border-radius: 2px; background: rgba(0,163,217,0.05); outline: none;}
 	.black {background: #000;}
@@ -37,7 +37,7 @@ $(function() {
 	});
 
 	$( "input[name='export']" ).click(function() {
-
+		$("#input").hide();
 		$("#output").fadeIn();
 		var temp;
 
